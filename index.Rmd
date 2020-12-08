@@ -861,7 +861,7 @@ plot_sp500 <- sp500 %>%
     title = "Hours to buy the S&P 500 1964-2019",
     subtitle = "(with Loess smoothed trendline)",
     x = "Year",
-    y = "Ratio\n",
+    y = "Hours\n",
     caption = "Data Source: Yahoo Finance, BLS”"
   ) + 
   theme(legend.position = "none")+
