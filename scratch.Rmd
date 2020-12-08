@@ -1,11 +1,14 @@
 ---
 title: "<center><div class='mytitle'>What Happened In 1971?</div></center>"
+pagetitle: "What Happened in 1971?"
 author: "<center><div class='mysubtitle'>A data demonstration by Robert Duc Bui <br> [Github](https://github.com/robert-mdh-bui) [Twitter](https://twitter.com/robert_b_) [LinkedIn](https://www.linkedin.com/in/robert-bui/)</div></center>"
 output:
   html_document:
     code_folding: show
     css: style.css
     toc: no
+    #toc_float: true
+    number_sections: true
     includes:
       before_body: header.html
 ---
@@ -18,11 +21,11 @@ output:
 
 ------------------------------------------------------------------------
 
-After more than two decades of economic growth and relative progress, the beginning of the 70s decade signalled an inauspicious reversal: after a sustained period of rising budget deficits and high interest rate following the Johnson administration, Nixon's economic team started a massive upheaval in American, and by extension, global economic policy. This era of upheaval, otherwise inconspicuous to those outside of macroeconomic and political economy circles, would come to be known as the Nixon shock: the post-war economic system set up around the US as the world's primary gold reserve and by extension, around the US Dollar as the world's reserve currency was rapidly undone. The world after 1971 was poised to usher in an era radically different from its predecessor.
+After more than two decades of economic growth and relative progress, the beginning of the 70s decade signaled an inauspicious reversal: after a sustained period of rising budget deficits and high interest rate following the Johnson administration, Nixon's economic team started a massive upheaval in American, and by extension, global economic policy. This era of upheaval, otherwise inconspicuous to those outside of macroeconomic and political economy circles, would come to be known as the Nixon shock: the post-war economic system set up around the US as the world's primary gold reserve and by extension, around the US Dollar as the world's reserve currency was rapidly undone. The world after 1971 was poised to usher in an era radically different from its predecessor.
 
 **This demonstration's purpose is to showcase the year 1971 and the following years as a watershed moment, both for domestic economy of the US and for the global economic system.** Through RStudio's data aggregation, manipulation, and visualisation suites and using publicly available economic data, I will be examining several key performance indices that might help us glean some insight into the post-Bretton Woods world order.
 
-> It is important to note that this is not a policy or economic paper, nor will it attempt to delve deeply into macroeconomic theory. Such an analysis would fall beyond my expertise as a data visualisation enthusiast and political economy student. Whether the Shock was an unnecessary misstep by the Nixon administration, or an imperfect inevitability is decidedly beyond the scope of this demonstration, which is intended only to be a showcase for informative purposes.
+> It is important to note that this is not a policy or economic paper, nor will it attempt to delve deeply into the macroeconomic theory behind the Nixon shock or other developments in the 1970s. Such an analysis would fall beyond my expertise as a data visualisation enthusiast and political economy student. Whether the Shock was an unnecessary misstep by the Nixon administration, or an imperfect inevitability is decidedly beyond the scope of this demonstration, which is intended only to be a showcase for informative purposes.
 
 # Setting up the R environment
 
@@ -32,7 +35,7 @@ After more than two decades of economic growth and relative progress, the beginn
 
 <summary>
 
-This section is a technical explanation of packages, for fellow R enthusiasts. If you're more interested in the graphs, feel free to skip this section. Otherwise click here.
+This section briefly goes over the technical aspects of setting up R for creating the visualisations. The content here is chiefly for fellow R learners and enthusiasts. If you're more interested in the graphs, feel free to skip this section. Otherwise click here.
 
 </summary>
 
@@ -40,7 +43,7 @@ This section is a technical explanation of packages, for fellow R enthusiasts. I
 
 For the graphs in this demonstration, I will be using the *tidyverse* suite of packages for RStudio as the main toolset for data wrangling, cleaning, and visualisation through *ggplot2*. I will also be using *lubridate* for datetime manipulation, *stringr* for string manipulation, *fredr* for direct data fetching through the Federal Reserve Economic Data site provided by the Federal Reserve's API. For aesthetic customisation of the document, I use *patchwork* and *extrafont*.
 
-```{r echo=TRUE, fig.align="center", fig.height=6, message=FALSE, warning=FALSE}
+```{r class.output="scroll-100", echo=TRUE, fig.align="center", fig.height=6, message=FALSE, warning=FALSE}
 library(tidyverse)   # RStudio's suite of extended tools.
 library(lubridate)   # For datetime manipulation
 library(extrafont)   # For custom fonts.
@@ -53,7 +56,7 @@ library(kableExtra)  # For tables
 
 Should you the reader wish to replicate the plots in this demonstration, keep in mind that the fredr package connects through FRED's API, and thus requires an API key to be set. Here is a sample for the syntax to set an API key, but for your personal use you will need to sign up for a free account with FRED, and set your own API key.
 
-```{r eval=FALSE,message=FALSE, warning=FALSE}
+```{r class.output="scroll-100", eval=FALSE,message=FALSE, warning=FALSE}
 fredr_set_key("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 ```
 
@@ -89,7 +92,7 @@ To avoid repetition in constructing the plots, I predefine a custom theme based 
 
 ### Theme Code
 
-```{r message=FALSE, warning=FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE}
 theme_pelican70 <- function () { 
   theme_minimal(base_size=12.5, base_family="Montserrat Light") %+replace%
     theme(
@@ -157,9 +160,11 @@ ggplot(data=mtcars,
 
 </detail>
 
-# The Decoupling of the Tide
+# Domestic Decoupling of the US Economy
 
 ------------------------------------------------------------------------
+
+This section focuses chiefly on how most of the economic growth post-71 in the US has been decoupled from the realities of the average American worker.
 
 The shared prosperity following the end of WW2 would have one believe in "a rising tide lifts all boats" - but this seemed to have stopped being true after 1971, especially for the middle class and working class in the US. In this section, we examine the various ways in which the common American worker has not shared in the continued economic growth since what I call the great decoupling that took place around 1971.
 
@@ -177,7 +182,7 @@ knitr::include_graphics("plots/plot_prod_wage.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 prod_wage <- read_csv("productivity_wage.csv") %>%
   mutate_all(funs(str_replace(., "%", ""))) %>%
   mutate_all(funs(str_squish(.))) %>%
@@ -351,7 +356,7 @@ knitr::include_graphics("plots/plot_minwage_gdppc.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 minwage_gdpcapita <- fredr(
   series_id = "FEDMINNFRWG",
   observation_start = as.Date("1960-01-01"),
@@ -568,7 +573,7 @@ knitr::include_graphics("plots/plot_corp_medincome.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 corp_medincome <- fredr(
   series_id = "CP",
   observation_start = as.Date("1960-01-01"),
@@ -769,6 +774,170 @@ fredr(
   scroll_box(width = "100%", height = "500px")
 
 ```
+## Wage Labour Hours to buy into Stock Market Indices {.tabset .tabset-fade .tabset-pills}
+
+Without government pension programmes, US workers often rely on retirement accounts to prepare for the future. A large amount of this capital stored in retirement accounts (401k, etc.), a large portion of which is distributed into major market indices, such as the Dow Jones Industrial Average (^DJI), the S&P 500 (^GSPC), or the Russell 2000 (^RUT). But when corporate profitability is high compared to hourly wage, the average worker might have had a more difficult time hitching themselves to the profit ride that the stock market has been riding on. Here, I decided to base my analysis on how many hours it would take for a worker to buy the value of the S&P 500 - mostly because the S&P 500 and its derivative products have had a history of being a popular investment.
+
+Admittedly the trend reversal here appears to be delayed - at least a couple of years after 1971 itself. Still, I believe this trend still fits with the overall theme: since the 70s, the average worker has had to work nearly ten times the amount of hours to buy into the most popular investment instrument.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_sp500.png")
+```
+
+### Code
+
+Here I call two extra packages called *tidyquant* and *quantmod* to fetch and manipulate stock market data.
+
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
+library(tidyquant)
+library(quantmod)
+
+sp500 <- read_csv("avg_hourly_earning.csv") %>% 
+  pivot_longer(cols = -Year,
+               names_to = "month",
+               values_to ="value") %>% 
+  mutate(rtime = paste("01",month,Year,sep=" "),
+         date = dmy(rtime),
+         series_id = "avg_hourly_wage") %>% 
+  select(date,series_id,value) %>% 
+  rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  mutate(series_id = ifelse(series_id == "USACPIALLMINMEI", "cpi",series_id)) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(wage = avg_hourly_wage * cpi / 100) %>% 
+  select(date,wage) %>% 
+  filter(!is.na(wage)) %>% 
+  left_join(getSymbols("^GSPC",
+           from = "1964-01-01",
+           to = "2019-01-01",
+           src = "yahoo",
+           auto.assign=F) %>% 
+  as.data.frame() %>% 
+  rownames_to_column("date") %>% 
+  select(date,sp500 = GSPC.Close) %>% 
+  mutate(date = as.Date(date),
+         year = year(date),
+         month = month(date)) %>% 
+  group_by(year,month) %>% 
+  summarise(sp500 = first(sp500)) %>% 
+  ungroup() %>% 
+  mutate(date = paste(year,month,"01",sep="-") %>% ymd(),
+            sp500 = sp500) %>% 
+  select(date,sp500)) %>% 
+  mutate(hour_to_buy = sp500/wage) 
+
+plot_sp500 <- sp500 %>% 
+  ggplot(
+    aes(
+      x = date,
+      y = hour_to_buy
+    )
+  )+
+  geom_smooth(col   = palette_prim[2],
+              fill  = palette_2nd[2],
+              size  = 1.6,
+              alpha = .75)+
+  geom_line(col  = palette_prim[3],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+  labs(
+    title = "Hours to buy the S&P 500 1964-2019",
+    subtitle = "(with Loess smoothed trendline)",
+    x = "Year",
+    y = "Ratio\n",
+    caption = "Data Source: Yahoo Finance, BLS”"
+  ) + 
+  theme(legend.position = "none")+
+  annotate(
+    "text",
+    x = as.Date("1972-12-01"),
+    y = 300,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  )
+
+ggsave(plot = plot_sp500,
+       filename = "plots/plot_sp500.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+read_csv("avg_hourly_earning.csv") %>% 
+  pivot_longer(cols = -Year,
+               names_to = "month",
+               values_to ="value") %>% 
+  mutate(rtime = paste("01",month,Year,sep=" "),
+         date = dmy(rtime),
+         series_id = "avg_hourly_wage") %>% 
+  select(date,series_id,value) %>% 
+  rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  mutate(series_id = ifelse(series_id == "USACPIALLMINMEI", "cpi",series_id)) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(wage = avg_hourly_wage * cpi / 100) %>% 
+  select(date,wage) %>% 
+  filter(!is.na(wage)) %>% 
+  left_join(quantmod::getSymbols("^GSPC",
+           from = "1964-01-01",
+           to = "2019-01-01",
+           src = "yahoo",
+           auto.assign=F) %>% 
+  as.data.frame() %>% 
+  rownames_to_column("date") %>% 
+  select(date,sp500 = GSPC.Close) %>% 
+  mutate(date = as.Date(date),
+         year = year(date),
+         month = month(date)) %>% 
+  group_by(year,month) %>% 
+  summarise(sp500 = first(sp500)) %>% 
+  ungroup() %>% 
+  mutate(date = paste(year,month,"01",sep="-") %>% ymd(),
+            sp500 = sp500) %>% 
+  select(date,sp500)) %>% 
+  mutate(hour_to_buy = sp500/wage) %>% 
+  transmute(`Year & Month` = paste(year(date),month(date),sep="-"),
+            `Avg. Nominal Hourly Wage for Nonmanagement Workers` = wage,
+            `S&P500 Nominal Value` = sp500,
+            `Labour Hours to Buy S&P500` = hour_to_buy
+            ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+```
+
+
 ## CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
 
 And this precipitous increase in corporate profits, having not trickled down to the middle class, appears to have mostly gone to the corporate executives of America. While in the 60s and early 70s, a CEO only earned about 20x to 25x the amount their worker did, this ratio skyrocketed to more 320 by 2019. This change may not have taken place dramatically in the year 1971, but it can be argued that the decade following '71 was a long process of trend reversal from relative parity to the outsized ratio of modern America.
@@ -781,7 +950,7 @@ knitr::include_graphics("plots/plot_ceo_ratio.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 plot_ceo_ratio <- read_csv("ceo_comp.csv") %>% 
   mutate(
     realized = realized %>% str_extract("^\\d+.{0,1}\\d+") %>% as.numeric()
@@ -865,7 +1034,7 @@ knitr::include_graphics("plots/plot_gini.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 gini <- fredr(
   series_id = "GINIALLRF",
   observation_start = as.Date("1800-01-01"),
@@ -950,7 +1119,7 @@ knitr::include_graphics("plots/plot_top5_incomeshare.png")
 
 ### Code
 
-```{r message=FALSE, warning=FALSE, eval = FALSE}
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 saez <- read_csv("pikettysaez_table2.csv") 
 
 
