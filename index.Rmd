@@ -66,7 +66,9 @@ fredr_set_key("fe0584c38504eccc993f49fe09fef128")
 
 ## Colour palette
 
-I will also set a custom colour scale for use throughout different visualisations, for the sake of design continuity. The palettes are defined here, and displayed below. The colours and general design are inspired by vintage book covers by Pelican Books from the 1970s.
+I will also set a custom colour scale for use throughout different visualisations, for the sake of design continuity. The palettes are defined here, and displayed below. The colours and general design are inspired by vintage book covers by Pelican Books (and others in the same vein) from the 1970s.
+
+![](https://i1.wp.com/www.grapheine.com/wp-content/uploads/2017/07/1970-livres-1.jpg "The Proto-Minimalism of 70s Book Covers")
 
 ```{r fig.align="center", fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
 palette_prim  <- c("#ECA400", 
@@ -325,7 +327,6 @@ ggsave(plot = plot_prod_wage,
 
 ```
 
-
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
@@ -342,7 +343,6 @@ read_csv("productivity_wage.csv") %>%
   scroll_box(width = "100%", height = "500px")
 
 ```
-
 
 ## GDP per Capita vs. Federal Minimum Wage {.tabset .tabset-fade .tabset-pills}
 
@@ -774,9 +774,10 @@ fredr(
   scroll_box(width = "100%", height = "500px")
 
 ```
+
 ## Wage Labour Hours to buy into Stock Market Indices {.tabset .tabset-fade .tabset-pills}
 
-Without government pension programmes, US workers often rely on retirement accounts to prepare for the future. A large amount of this capital stored in retirement accounts (401k, etc.), a large portion of which is distributed into major market indices, such as the Dow Jones Industrial Average (^DJI), the S&P 500 (^GSPC), or the Russell 2000 (^RUT). But when corporate profitability is high compared to hourly wage, the average worker might have had a more difficult time hitching themselves to the profit ride that the stock market has been riding on. Here, I decided to base my analysis on how many hours it would take for a worker to buy the value of the S&P 500 - mostly because the S&P 500 and its derivative products have had a history of being a popular investment.
+Without government pension programmes, US workers often rely on retirement accounts to prepare for the future. A large amount of this capital stored in retirement accounts (401k, etc.), a large portion of which is distributed into major market indices, such as the Dow Jones Industrial Average (\^DJI), the S&P 500 (\^GSPC), or the Russell 2000 (\^RUT). But when corporate profitability is high compared to hourly wage, the average worker might have had a more difficult time hitching themselves to the profit ride that the stock market has been riding on. Here, I decided to base my analysis on how many hours it would take for a worker to buy the value of the S&P 500 - mostly because the S&P 500 and its derivative products have had a history of being a popular investment.
 
 Admittedly the trend reversal here appears to be delayed - at least a couple of years after 1971 itself. Still, I believe this trend still fits with the overall theme: since the 70s, the average worker has had to work nearly ten times the amount of hours to buy into the most popular investment instrument.
 
@@ -881,7 +882,6 @@ ggsave(plot = plot_sp500,
        type = "cairo-png")
 ```
 
-
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
@@ -936,7 +936,6 @@ read_csv("avg_hourly_earning.csv") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
   scroll_box(width = "100%", height = "500px")
 ```
-
 
 ## CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
 
@@ -1023,8 +1022,8 @@ Unsurprisingly this previous pattern has corresponded with an increase in the Gi
 > | \                                                                                                                                                                                                                    |
 > | The Gini index measures the area between the Lorenz curve and the hypothetical line of absolute equality, expressed as a percentage of the maximum area under the line.\                                             |
 > | \                                                                                                                                                                                                                    |
-> | A Gini index of zero represents perfect equality and 100, perfect inequality.                                                                                           
-
+> | A Gini index of zero represents perfect equality and 100, perfect inequality.                                                                                                                                        |
+> +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ### Plot
 
@@ -1086,7 +1085,6 @@ ggsave(plot = plot_gini,
        w = 10,
        type = "cairo-png")
 ```
-
 
 ### Data
 
@@ -1197,5 +1195,3 @@ read_csv("pikettysaez_table2.csv") %>%
 <br><br><br>
 
 </div>
-
-
