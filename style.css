@@ -1,3 +1,14 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('https://github.com/robert-mdh-bui/what1971/raw/main/fonts/Montserrat-Light.ttf');
+}
+
+@font-face {
+  font-family: 'Newslab';
+  src: url('https://github.com/robert-mdh-bui/what1971/raw/main/fonts/NewslabBold.ttf');
+}
+
+
 /* This change the style of the main container that wraps the whole R Markdown document. It allows the parallax image to be full width */
 .main-container {
     max-width: 100% !important;
@@ -39,12 +50,14 @@
 h2, .h2, h3, .h3 {
     margin-top: 100px;
     font-size: 110%;
+    font-family: 'Newslab';
 }
 
 h1 {
     padding-top: 65px !important;
     margin-top: 30px !important;
     font-size: 250%;
+    font-family: 'Newslab';
 }
 
 pre {
