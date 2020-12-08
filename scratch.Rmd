@@ -1,0 +1,1032 @@
+---
+title: "<center><div class='mytitle'>What Happened In 1971?</div></center>"
+author: "<center><div class='mysubtitle'>A data demonstration by Robert Duc Bui <br> [Github](https://github.com/robert-mdh-bui) [Twitter](https://twitter.com/robert_b_) [LinkedIn](https://www.linkedin.com/in/robert-bui/)</div></center>"
+output:
+  html_document:
+    code_folding: show
+    css: style.css
+    toc: no
+    includes:
+      before_body: header.html
+---
+
+<br><br>
+
+<div class="mycontent">
+
+# Introduction
+
+------------------------------------------------------------------------
+
+After more than two decades of economic growth and relative progress, the beginning of the 70s decade signalled an inauspicious reversal: after a sustained period of rising budget deficits and high interest rate following the Johnson administration, Nixon's economic team started a massive upheaval in American, and by extension, global economic policy. This era of upheaval, otherwise inconspicuous to those outside of macroeconomic and political economy circles, would come to be known as the Nixon shock: the post-war economic system set up around the US as the world's primary gold reserve and by extension, around the US Dollar as the world's reserve currency was rapidly undone. The world after 1971 was poised to usher in an era radically different from its predecessor.
+
+**This demonstration's purpose is to showcase the year 1971 and the following years as a watershed moment, both for domestic economy of the US and for the global economic system.** Through RStudio's data aggregation, manipulation, and visualisation suites and using publicly available economic data, I will be examining several key performance indices that might help us glean some insight into the post-Bretton Woods world order.
+
+> It is important to note that this is not a policy or economic paper, nor will it attempt to delve deeply into macroeconomic theory. Such an analysis would fall beyond my expertise as a data visualisation enthusiast and political economy student. Whether the Shock was an unnecessary misstep by the Nixon administration, or an imperfect inevitability is decidedly beyond the scope of this demonstration, which is intended only to be a showcase for informative purposes.
+
+# Setting up the R environment
+
+------------------------------------------------------------------------
+
+<details>
+
+<summary>
+
+This section is a technical explanation of packages, for fellow R enthusiasts. If you're more interested in the graphs, feel free to skip this section. Otherwise click here.
+
+</summary>
+
+## Packages
+
+For the graphs in this demonstration, I will be using the *tidyverse* suite of packages for RStudio as the main toolset for data wrangling, cleaning, and visualisation through *ggplot2*. I will also be using *lubridate* for datetime manipulation, *stringr* for string manipulation, *fredr* for direct data fetching through the Federal Reserve Economic Data site provided by the Federal Reserve's API. For aesthetic customisation of the document, I use *patchwork* and *extrafont*.
+
+```{r echo=TRUE, fig.align="center", fig.height=6, message=FALSE, warning=FALSE}
+library(tidyverse)   # RStudio's suite of extended tools.
+library(lubridate)   # For datetime manipulation
+library(extrafont)   # For custom fonts.
+library(fredr)       # For direct data fetching through FRED's API.
+library(patchwork)   # For plot tiling.
+library(kableExtra)  # For tables
+```
+
+## API Key
+
+Should you the reader wish to replicate the plots in this demonstration, keep in mind that the fredr package connects through FRED's API, and thus requires an API key to be set. Here is a sample for the syntax to set an API key, but for your personal use you will need to sign up for a free account with FRED, and set your own API key.
+
+```{r eval=FALSE,message=FALSE, warning=FALSE}
+fredr_set_key("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+```
+
+```{r include=FALSE}
+fredr_set_key("fe0584c38504eccc993f49fe09fef128")
+```
+
+## Colour palette
+
+I will also set a custom colour scale for use throughout different visualisations, for the sake of design continuity. The palettes are defined here, and displayed below. The colours and general design are inspired by vintage book covers by Pelican Books from the 1970s.
+
+```{r fig.align="center", fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
+palette_prim  <- c("#ECA400", 
+                   "#006992", 
+                   "#b33951")
+palette_2nd   <- c("#FFD470", 
+                   "#99E2FF",
+                   "#DD92A1")
+palette_tert  <- c("#FBF6EF",
+                   "#0B0A07")
+palette_grid  <- c("#768749")
+
+scales::show_col(palette_prim %>% 
+                   append(palette_2nd) %>% 
+                   append(palette_grid) %>% 
+                   append(palette_tert),
+                 border = NA)
+```
+
+## Custom ggplot2 theme {.tabset .tabset-fade .tabset-pills}
+
+To avoid repetition in constructing the plots, I predefine a custom theme based on ggplot2's *theme_minimal()* here.
+
+### Theme Code
+
+```{r message=FALSE, warning=FALSE}
+theme_pelican70 <- function () { 
+  theme_minimal(base_size=12.5, base_family="Montserrat Light") %+replace%
+    theme(
+      panel.background      = element_rect(fill = palette_tert[1], colour=NA),
+      plot.background       = element_rect(fill = palette_tert[1], colour=NA),
+      
+      legend.background     = element_rect(fill = "transparent", colour=NA),
+      legend.key            = element_rect(fill = "transparent", colour=NA),
+      
+      plot.margin           = unit(c(t=1,r=1,b=1,l=1),"cm"),
+      
+      plot.title            = element_text(family = "Newslab Bold",
+                                           color = palette_tert[2],
+                                           margin = margin(t = 2,
+                                                           b = 14,
+                                                           unit = "pt")),
+      plot.subtitle         = element_text(family = "Newslab",
+                                           color = palette_tert[2]),
+      axis.text.y           = element_text(angle = 90,
+                                           color=palette_tert[2]),
+      axis.text.x           = element_text(color=palette_tert[2]),
+      axis.title.x          = element_text(color=palette_tert[2],
+                                           face="bold.italic",
+                                           margin = margin(t = 2,
+                                                           b = 2,
+                                                           unit = "pt")),
+      axis.title.y          = element_text(color=palette_tert[2],
+                                           angle = 90,
+                                           face="bold.italic",
+                                           margin = margin(t = 2,
+                                                           b = 2,
+                                                           unit = "pt")),
+      strip.text.x          = element_blank(),
+      
+      panel.grid.major.x    = element_line(linetype = "dotted",
+                                           colour = palette_grid),
+      panel.grid.major.y    = element_line(linetype = "dotted",
+                                           colour = palette_grid),
+      panel.grid.minor.x    = element_blank(),
+      panel.grid.minor.y    = element_blank(),
+      
+      plot.caption          = element_text(color=palette_tert[2],
+                                           face="italic",
+                                           size=7,
+                                           hjust = 1,
+                                           vjust = 1),
+      plot.caption.position = "plot"
+    )
+}
+```
+
+### Plot Example
+
+```{r fig.align="center", fig.height=6, fig.width=6, message=FALSE, warning=FALSE}
+ggplot(data=mtcars,
+       aes(as.factor(gear),mpg,fill=as.factor(gear)))+
+  geom_boxplot(col=palette_tert[2])+
+  geom_jitter()+
+  scale_fill_manual(values = palette_prim)+
+  theme_pelican70()+
+  labs(title="Example with mtcars dataset: Mileage by gear number",
+       x = "Gears",y="Miles per Gallon", fill = "Gears")
+
+```
+
+</detail>
+
+# The Decoupling of the Tide
+
+------------------------------------------------------------------------
+
+The shared prosperity following the end of WW2 would have one believe in "a rising tide lifts all boats" - but this seemed to have stopped being true after 1971, especially for the middle class and working class in the US. In this section, we examine the various ways in which the common American worker has not shared in the continued economic growth since what I call the great decoupling that took place around 1971.
+
+## Productivity vs. Wages {.tabset .tabset-fade .tabset-pills}
+
+This first plot is probably the most well known: as much as labour productivity has continued to rise, since the 70s, wages have stagnated when adjusted for inflation. Using data from the Economic Policy Institute, here I recreate the plot of relative percentage rise in productivity for all workers and of hourly wage across the US.
+
+Here, we can see clearly that in the few years after 1971, the general rate of increase for wages fell precipitously while productivity continues its previous trajectory. The growing economy had left the worker behind.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_prod_wage.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+prod_wage <- read_csv("productivity_wage.csv") %>%
+  mutate_all(funs(str_replace(., "%", ""))) %>%
+  mutate_all(funs(str_squish(.))) %>%
+  transmute(
+    year = as.numeric(Year),
+    wage48 = (as.numeric(`Hourly compensation`)+100)/100,
+    prod48 = (as.numeric(`Net productivity`)+100)/100
+  )
+
+w71 <- prod_wage[prod_wage$year==1971,]$wage48
+p71 <- prod_wage[prod_wage$year==1971,]$prod48
+
+prod_wage71 <- prod_wage %>% 
+  transmute(
+    year = year,
+    wage71 = as.numeric(format(round(wage48/w71, 4), nsmall = 4)),
+    prod71 = as.numeric(format(round(prod48/p71, 4), nsmall = 4))
+  ) %>% 
+  filter(year > 1971)
+
+plot_prod_wage <- prod_wage %>%
+  pivot_longer(cols = -year,
+               names_to = "var",
+               values_to = "y") %>%
+  mutate(y = (y)) %>%
+  ggplot(aes(
+    x = year,
+    y = y,
+    col = var,
+    group = var,
+    text = paste(sep = "",
+                 "Year: ",year,
+                 "\n% of 1948: ",y*100,"%")
+  )) +
+  geom_line(size = 1.25) +
+  
+  theme_pelican70() +
+  scale_color_manual(values = palette_prim) +
+  
+  scale_x_continuous(breaks = seq(1948, 2018, 8)) +
+  scale_y_continuous(labels = scales::percent,
+                     breaks = seq(1, 3, 1)) +
+  xlim(1945, 2026) +
+  
+  annotate(
+    "text",
+    x = max(prod_wage$year),
+    y = (prod_wage$wage48 %>% last()) - .5,
+    label = "Hourly Wage \nsince '71",
+    fontface = 1,
+    col = palette_prim[2]
+  ) +
+  annotate(
+    "text",
+    x = max(prod_wage$year),
+    y = (prod_wage$prod48 %>% last()) - .5,
+    label = "Productivity \nsince '71",
+    fontface = 1,
+    col = palette_prim[1]
+  ) +
+  
+  annotate(
+    "point",
+    size = 3,
+    x = max(prod_wage$year),
+    y = (prod_wage$prod48 %>% last()),
+    col = palette_prim[1]
+  ) +
+  annotate(
+    "point",
+    size = 3,
+    x = max(prod_wage$year),
+    y = (prod_wage$wage48 %>% last()),
+    col = palette_prim[2]
+  ) +
+  
+  annotate(
+    "text",
+    x = max(prod_wage$year),
+    y = (prod_wage$prod48 %>% last()) - .20,
+    label = paste("+",
+                  ((
+                    prod_wage71$prod71 %>% last()
+                  ) - 1) * 100,
+                  "%",
+                  sep = ""),
+    fontface = 2,
+    size = 5,
+    col = palette_prim[1]
+  ) +
+  annotate(
+    "text",
+    x = max(prod_wage$year),
+    y = (prod_wage$wage48 %>% last()) - .20,
+    label = paste("+",
+                  ((
+                    prod_wage71$wage71 %>% last()
+                  ) - 1) * 100,
+                  "%",
+                  sep = ""),
+    fontface = 2,
+    size = 5,
+    col = palette_prim[2]
+  ) +
+  
+  annotate(
+    "segment",
+    x = 1971,
+    xend = 1971,
+    y = .95,
+    yend = 3.35,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  ) +
+  annotate(
+    "text",
+    x = 1971,
+    y = 3.50,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  labs(
+    title = "Figure 1: Productivity and hourly wage rise from 1948-2018",
+    subtitle = "",
+    x = "Year",
+    y = "% of 1948 value\n",
+    caption = "Data Source: Economic Policy Institute, BLS"
+  ) +
+  
+  theme(legend.position = "none")
+
+ggsave(plot = plot_prod_wage,
+       filename = "plots/plot_prod_wage.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+
+```
+
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+read_csv("productivity_wage.csv") %>%
+  mutate_all(funs(str_replace(., "%", ""))) %>%
+  mutate_all(funs(str_squish(.))) %>%
+  transmute(
+    Year = as.numeric(Year),
+    `Hourly Wage` = (as.numeric(`Hourly compensation`)+100)/100,
+    `Labour Productivity` = (as.numeric(`Net productivity`)+100)/100
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+
+## GDP per Capita vs. Federal Minimum Wage {.tabset .tabset-fade .tabset-pills}
+
+To further demonstrate that prosperity in the economy at large has not trickled down to the working class, this plot shows that while GDP per capita has risen greatly since '71, the inflation-adjusted value of the federal minimum wage level has actually fallen sine 1971.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_minwage_gdppc.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+minwage_gdpcapita <- fredr(
+  series_id = "FEDMINNFRWG",
+  observation_start = as.Date("1960-01-01"),
+  observation_end = as.Date("2019-01-02")
+) %>% rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(
+    adj_minwage = FEDMINNFRWG/USACPIALLMINMEI*100
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  select(date,adj_minwage) %>% 
+  pivot_longer(
+    cols = -date,
+    names_to = "series_id",
+    values_to = "value"
+  ) %>% 
+  rbind(
+    fredr(
+      series_id = "A939RX0Q048SBEA",
+      observation_start = as.Date("1960-01-01"),
+      observation_end = as.Date("2019-01-02")
+    )
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  mutate(date = year(date)) %>% 
+  group_by(series_id) %>% 
+  mutate(
+    val_adj = value/first(value)
+  ) 
+
+last_val_gdp <- last(minwage_gdpcapita[minwage_gdpcapita$series_id == "A939RX0Q048SBEA",]$val_adj)
+last_val_fmw <- last(minwage_gdpcapita[minwage_gdpcapita$series_id == "adj_minwage",]$val_adj)
+
+text_gdp <- paste("+",
+                  as.numeric(format(round((last_val_gdp-1)*100, 2), nsmall = 2)),
+                  "%",
+                  sep = "")
+text_fmw <- paste("-",
+                  as.numeric(format(round((1-last_val_fmw)*100, 2), nsmall = 2)),
+                  "%",
+                  sep = "")
+
+plot_minwage_gdppc <- minwage_gdpcapita %>% 
+  ggplot(
+    aes(
+      x = date,
+      y = val_adj,
+      col = series_id,
+      text = paste(sep = "",
+                   "Year: ",date,
+                   "% of 1960: ",val_adj)
+    )
+  ) + 
+  geom_line(size=1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+    
+  xlim(1960,2032)+
+  ylim(1,3.6)+
+  
+  scale_color_manual(values=palette_prim)+
+  scale_y_continuous(labels = scales::percent,
+                     breaks = seq(1, 3, 1))+
+  theme_pelican70()+
+  labs(
+    title = "Real GDP per capita vs. Federal minimum wage rise 1960-2019",
+    subtitle = "",
+    x = "Year",
+    y = "% of 1960 value \n",
+    caption = "Data Source: FRED"
+  ) +
+
+  annotate("point",
+           x = 2019,
+           y = last_val_gdp,
+           col = palette_prim[1],
+           size=3)+
+  annotate("point",
+           x = 2019,
+           y = last_val_fmw,
+           col = palette_prim[2],
+           size=3)+
+  
+  annotate("text",
+           x = 2024,
+           y = last_val_gdp+.1,
+           label = text_gdp,
+           col = palette_prim[1],
+           fontface = 2,
+           size = 5
+  )+
+  annotate("text",
+           x = 2024,
+           y = last_val_fmw+.5,
+           label = text_fmw,
+           col = palette_prim[2],
+           fontface = 2,
+           size = 5
+  )+
+  
+  annotate("text",
+           x = 2024,
+           y = last_val_gdp-.1,
+           label = "\n GDP/capita \nsince '71",
+           col = palette_prim[1],
+           size = 4
+  )+
+  annotate("text",
+           x = 2024,
+           y = last_val_fmw+.2,
+           label = "\n Adj. Federal \nminimum wage \nsince '71",
+           col = palette_prim[2],
+           size = 4
+  )+
+  annotate(
+    "text",
+    x = 1969,
+    y = 3.25,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  theme(legend.position = "none")
+
+ggsave(plot = plot_minwage_gdppc,
+       filename = "plots/plot_minwage_gdppc.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+fredr(
+  series_id = "FEDMINNFRWG",
+  observation_start = as.Date("1960-01-01"),
+  observation_end = as.Date("2019-01-02")
+) %>% rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(
+    adj_minwage = FEDMINNFRWG/USACPIALLMINMEI*100
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  select(date,adj_minwage) %>% 
+  pivot_longer(
+    cols = -date,
+    names_to = "series_id",
+    values_to = "value"
+  ) %>% 
+  rbind(
+    fredr(
+      series_id = "A939RX0Q048SBEA",
+      observation_start = as.Date("1960-01-01"),
+      observation_end = as.Date("2019-01-02")
+    )
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  mutate(date = year(date)) %>% 
+  group_by(series_id) %>% 
+  mutate(
+    val_adj = value/first(value)
+  ) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  rename(
+    Year = date,
+    `Adj. Federal Min. Wage` = adj_minwage,
+    `Adj. GDP per capita` = A939RX0Q048SBEA
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+## Corporate Profits vs. Median Household Income {.tabset .tabset-fade .tabset-pills}
+
+An even more dramatic rise can be seen in corporate profits since: aggregate corporate profits after tax has skyrocketed sixfold, but median household income has only doubled in the same time period. Both time series here are adjusted for inflation with a CPI deflator (2018 dollars). Granted, the trajectory for corporate profits is a lot more choppy (especially around the 2008 Global Financial Crisis), even in that era corporate profit still outstrips median household income by more than twice as much.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_corp_medincome.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+corp_medincome <- fredr(
+  series_id = "CP",
+  observation_start = as.Date("1960-01-01"),
+  observation_end = as.Date("2019-01-02")
+) %>% rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(
+    adj = CP/USACPIALLMINMEI*100
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  select(date,adj) %>% 
+  pivot_longer(
+    cols = -date,
+    names_to = "series_id",
+    values_to = "value"
+  ) %>% 
+  rbind(
+    fredr(
+      series_id = "MEFAINUSA672N",
+      observation_start = as.Date("1960-01-01"),
+      observation_end = as.Date("2019-01-02")
+    )
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  mutate(date = year(date)) %>% 
+  group_by(series_id) %>% 
+  mutate(
+    val_adj = value/first(value)
+  )
+
+
+last_val_crp <- last(corp_medincome[corp_medincome$series_id == "adj",]$val_adj)
+last_val_mhi <- last(corp_medincome[corp_medincome$series_id == "MEFAINUSA672N",]$val_adj)
+
+text_crp <- paste("+",
+                  as.numeric(format(round((last_val_crp-1)*100, 2), nsmall = 2)),
+                  "%",
+                  sep = "")
+text_mhi <- paste("+",
+                  as.numeric(format(round((last_val_mhi-1)*100, 2), nsmall = 2)),
+                  "%",
+                  sep = "")
+
+plot_corp_medincome <- corp_medincome %>% 
+  ggplot(
+    aes(
+      x = date,
+      y = val_adj,
+      col = series_id
+    )
+  ) + 
+  geom_line(size=1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+    
+  xlim(1960,2032)+
+  ylim(1,3.6)+
+  
+  scale_color_manual(values=palette_prim)+
+  scale_y_continuous(labels = scales::percent)+
+  theme_pelican70()+
+  labs(
+    title = "Adjusted corporate profits vs. median household income 1960-2019",
+    subtitle = "",
+    x = "Year",
+    y = "% of 1960 value \n",
+    caption = "Data Source: FRED"
+  ) +
+
+  annotate("point",
+           x = 2019,
+           y = last_val_crp,
+           col = palette_prim[1],
+           size=3)+
+  annotate("point",
+           x = 2019,
+           y = last_val_mhi,
+           col = palette_prim[2],
+           size=3)+
+  
+  annotate("text",
+           x = 2025,
+           y = last_val_crp+.2,
+           label = text_crp,
+           col = palette_prim[1],
+           fontface = 2,
+           size = 5
+  )+
+  annotate("text",
+           x = 2024,
+           y = last_val_mhi+.39,
+           label = text_mhi,
+           col = palette_prim[2],
+           fontface = 2,
+           size = 5
+  )+
+  
+  annotate("text",
+           x = 2025,
+           y = last_val_crp-.2,
+           label = "\n Corporate Profits \nsince '71",
+           col = palette_prim[1],
+           size = 4
+  )+
+  annotate("text",
+           x = 2024,
+           y = last_val_mhi-.21,
+           label = "\n Median \nHousehold income \nsince '71",
+           col = palette_prim[2],
+           size = 4
+  )+
+  annotate(
+    "text",
+    x = 1969,
+    y = 7,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  theme(legend.position = "none")
+
+ggsave(plot = plot_corp_medincome,
+       filename = "plots/plot_corp_medincome.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+fredr(
+  series_id = "CP",
+  observation_start = as.Date("1960-01-01"),
+  observation_end = as.Date("2019-01-02")
+) %>% rbind(
+  fredr(
+    series_id = "USACPIALLMINMEI",
+    observation_start = as.Date("1960-01-01"),
+    observation_end = as.Date("2019-01-02")
+  )
+) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  mutate(
+    adj = CP/USACPIALLMINMEI*100
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  select(date,adj) %>% 
+  pivot_longer(
+    cols = -date,
+    names_to = "series_id",
+    values_to = "value"
+  ) %>% 
+  rbind(
+    fredr(
+      series_id = "MEFAINUSA672N",
+      observation_start = as.Date("1960-01-01"),
+      observation_end = as.Date("2019-01-02")
+    )
+  ) %>% 
+  filter(month(date) == 1) %>% 
+  mutate(date = year(date)) %>% 
+  group_by(series_id) %>% 
+  mutate(
+    val_adj = value/first(value)
+  ) %>% 
+  pivot_wider(
+    id_cols = date,
+    names_from = series_id,
+    values_from = value
+  ) %>% 
+  rename(
+    Year = date,
+    `Corporate Profits After Tax (billions)` = adj,
+    `Real Median Family Income` = MEFAINUSA672N
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+## CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
+
+And this precipitous increase in corporate profits, having not trickled down to the middle class, appears to have mostly gone to the corporate executives of America. While in the 60s and early 70s, a CEO only earned about 20x to 25x the amount their worker did, this ratio skyrocketed to more 320 by 2019. This change may not have taken place dramatically in the year 1971, but it can be argued that the decade following '71 was a long process of trend reversal from relative parity to the outsized ratio of modern America.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_ceo_ratio.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+plot_ceo_ratio <- read_csv("ceo_comp.csv") %>% 
+  mutate(
+    realized = realized %>% str_extract("^\\d+.{0,1}\\d+") %>% as.numeric()
+  ) %>% 
+  ggplot(
+    aes(
+      x = year,
+      y = realized
+    )
+  )+
+  geom_smooth(col   = palette_prim[2],
+              fill  = palette_2nd[2],
+              size  = 1.6,
+              alpha = .75)+
+  geom_line(col  = palette_prim[3],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+  labs(
+    title = "CEO-worker compensation ratio 1965-2019",
+    subtitle = "(with Loess smoothed trendline)",
+    x = "Year",
+    y = "Ratio\n",
+    caption = "Data Source: Economic Policy Institute”"
+  ) +
+  annotate(
+    "text",
+    x = 1969,
+    y = 350,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  theme(legend.position = "none")
+
+ggsave(plot = plot_ceo_ratio,
+       filename = "plots/plot_ceo_ratio.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+read_csv("ceo_comp.csv") %>% 
+  transmute(
+    Year = as.numeric(year),
+    `Realized Compensation Ratio` = realized %>% str_extract("^\\d+.{0,1}\\d+") %>% as.numeric()
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+## Inequality 1: Gini Index {.tabset .tabset-fade .tabset-pills}
+
+Unsurprisingly this previous pattern has corresponded with an increase in the Gini Index, measuring household income inequality. Here it is clear through the smoothed trendline that the years around 1971 were the bottom of the valley that signalled a trend reversal towards the massive inequality in modern America.
+
+> +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+> | Definition of the Gini Index, from the OECD:                                                                                                                                                                         |
+> |                                                                                                                                                                                                                      |
+> | The Gini index measures the extent to which the distribution of income (or, in some cases, consumption expenditure) among individuals or households within an economy deviates from a perfectly equal distribution.\ |
+> | \                                                                                                                                                                                                                    |
+> | The Gini index measures the area between the Lorenz curve and the hypothetical line of absolute equality, expressed as a percentage of the maximum area under the line.\                                             |
+> | \                                                                                                                                                                                                                    |
+> | A Gini index of zero represents perfect equality and 100, perfect inequality.                                                                                           
+
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_gini.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+gini <- fredr(
+  series_id = "GINIALLRF",
+  observation_start = as.Date("1800-01-01"),
+  observation_end = as.Date(Sys.Date())
+) 
+
+plot_gini <- gini %>% 
+  mutate(date = year(date)) %>% 
+  ggplot(
+    aes(
+      x = date,
+      y = value
+    )
+  ) + 
+  geom_smooth(col   = palette_prim[2],
+              fill  = palette_2nd[2],
+              size  = 1.25,
+              alpha = .75)+
+  geom_line(col  = palette_prim[3],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+  labs(
+    title = "Gini Index of Household Income Inequality 1947-2018",
+    subtitle = "(with Loess smoothed trendline)",
+    x = "Year",
+    y = "Gini Coefficient \n",
+    caption = "Data Source: FRED"
+  ) +
+  annotate(
+    "text",
+    x = 1969,
+    y = 0.46,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  theme(legend.position = "none")
+
+ggsave(plot = plot_gini,
+       filename = "plots/plot_gini.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+fredr(
+  series_id = "GINIALLRF",
+  observation_start = as.Date("1800-01-01"),
+  observation_end = as.Date(Sys.Date())
+) %>% 
+  mutate(date = year(date)) %>% 
+  transmute(
+    Year = as.numeric(date),
+    `Gini Coeffcient` = value
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+## Inequality 2: Top 5% as share of total income {.tabset .tabset-fade .tabset-pills}
+
+In a similar pattern, while in the post-war era, the top 5% of earners in America accounted for an unprecedentedly small proportion of total income, this proportion started to increase dramatically again, with the trend reversal beginning around 1971. Note that this data, taken from Saez and Piketty's original research, goes further back but is only available up to 1998. While more updated data is not readily available, judging from previous patterns, it wouldn't be unreasonable to surmise that this proportion has only increased since.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_top5_incomeshare.png")
+```
+
+### Code
+
+```{r message=FALSE, warning=FALSE, eval = FALSE}
+saez <- read_csv("pikettysaez_table2.csv") 
+
+
+plot_top5_incomeshare <- saez %>% 
+  transmute(year, top5 = share_95_99+share_99_100) %>% 
+  pivot_longer(
+    cols = -year,
+    names_to = "pop",
+    values_to = "value"
+  ) %>%
+  ggplot(
+    aes(
+      x = year,
+      y = value/100,
+      col = pop
+    )
+  )+
+  geom_smooth(col   = palette_prim[2],
+              fill  = palette_2nd[2],
+              size  = 1.6,
+              alpha = .75)+
+  geom_line(col  = palette_prim[3],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+  scale_y_continuous(labels = scales::percent)+
+  labs(
+    title = "Share of total income by top 5% earners 1917-1998",
+    subtitle = "(with Loess smoothed trendline)",
+    x = "Year",
+    y = "% Share of total \n",
+    caption = "Data Source: Piketty and Saez, 2003”"
+  ) +
+  annotate(
+    "text",
+    x = 1969,
+    y = 0.46,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  ylim(.18,.36)+
+  annotate(
+    "text",
+    x = 1969,
+    y = 0.35,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  theme(legend.position = "none")
+
+ggsave(plot = plot_top5_incomeshare,
+       filename = "plots/plot_top5_incomeshare.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+read_csv("pikettysaez_table2.csv") %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+<br><br><br>
+
+</div>
+
+
