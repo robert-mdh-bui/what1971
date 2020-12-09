@@ -165,7 +165,10 @@ ggplot(data=mtcars,
 
 </detail>
 
-# Domestic Decoupling of the US Economy
+
+# The Story of 1971
+
+## Domestic Decoupling of the US Economy
 
 ------------------------------------------------------------------------
 
@@ -173,19 +176,19 @@ This section focuses chiefly on how most of the economic growth post-71 in the U
 
 The shared prosperity following the end of WW2 would have one believe in "a rising tide lifts all boats" - but this seemed to have stopped being true after 1971, especially for the middle class and working class in the US. In this section, we examine the various ways in which the common American worker has not shared in the continued economic growth since what I call the great decoupling that took place around 1971.
 
-## Productivity vs. Wages {.tabset .tabset-fade .tabset-pills}
+### Productivity vs. Wages {.tabset .tabset-fade .tabset-pills}
 
 This first plot is probably the most well known: as much as labour productivity has continued to rise, since the 70s, wages have stagnated when adjusted for inflation. Using data from the Economic Policy Institute, here I recreate the plot of relative percentage rise in productivity for all workers and of hourly wage across the US.
 
 Here, we can see clearly that in the few years after 1971, the general rate of increase for wages fell precipitously while productivity continues its previous trajectory. The growing economy had left the worker behind.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_prod_wage.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 prod_wage <- read_csv("data/productivity_wage.csv") %>%
@@ -330,7 +333,7 @@ ggsave(plot = plot_prod_wage,
 
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 read_csv("data/productivity_wage.csv") %>%
@@ -347,17 +350,17 @@ read_csv("data/productivity_wage.csv") %>%
 
 ```
 
-## GDP per Capita vs. Federal Minimum Wage {.tabset .tabset-fade .tabset-pills}
+### GDP per Capita vs. Federal Minimum Wage {.tabset .tabset-fade .tabset-pills}
 
 To further demonstrate that prosperity in the economy at large has not trickled down to the working class, this plot shows that while GDP per capita has risen greatly since '71, the inflation-adjusted value of the federal minimum wage level has actually fallen sine 1971.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_minwage_gdppc.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 minwage_gdpcapita <- fredr(
@@ -417,10 +420,7 @@ plot_minwage_gdppc <- minwage_gdpcapita %>%
     aes(
       x = date,
       y = val_adj,
-      col = series_id,
-      text = paste(sep = "",
-                   "Year: ",date,
-                   "% of 1960: ",val_adj)
+      col = series_id
     )
   ) + 
   geom_line(size=1.25)+
@@ -506,7 +506,7 @@ ggsave(plot = plot_minwage_gdppc,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 fredr(
@@ -564,17 +564,17 @@ fredr(
 
 ```
 
-## Corporate Profits vs. Median Household Income {.tabset .tabset-fade .tabset-pills}
+### Corporate Profits vs. Median Household Income {.tabset .tabset-fade .tabset-pills}
 
 An even more dramatic rise can be seen in corporate profits since: aggregate corporate profits after tax has skyrocketed sixfold, but median household income has only doubled in the same time period. Both time series here are adjusted for inflation with a CPI deflator (2018 dollars). Granted, the trajectory for corporate profits is a lot more choppy (especially around the 2008 Global Financial Crisis), even in that era corporate profit still outstrips median household income by more than twice as much.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_corp_medincome.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 corp_medincome <- fredr(
@@ -720,7 +720,7 @@ ggsave(plot = plot_corp_medincome,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 fredr(
@@ -778,19 +778,19 @@ fredr(
 
 ```
 
-## Wage Labour Hours to buy into Stock Market Indices {.tabset .tabset-fade .tabset-pills}
+### Wage Labour Hours to buy into Stock Market Indices {.tabset .tabset-fade .tabset-pills}
 
 Without government pension programmes, US workers often rely on retirement accounts to prepare for the future. A large amount of this capital stored in retirement accounts (401k, etc.), a large portion of which is distributed into major market indices, such as the Dow Jones Industrial Average (\^DJI), the S&P 500 (\^GSPC), or the Russell 2000 (\^RUT). But when corporate profitability is high compared to hourly wage, the average worker might have had a more difficult time hitching themselves to the profit ride that the stock market has been riding on. Here, I decided to base my analysis on how many hours it would take for a worker to buy the value of the S&P 500 - mostly because the S&P 500 and its derivative products have had a history of being a popular investment.
 
 Admittedly the trend reversal here appears to be delayed - at least a couple of years after 1971 itself. Still, I believe this trend still fits with the overall theme: since the 70s, the average worker has had to work nearly ten times the amount of hours to buy into the most popular investment instrument.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_sp500.png")
 ```
 
-### Code
+#### Code
 
 Here I call two extra packages called *tidyquant* and *quantmod* to fetch and manipulate stock market data.
 
@@ -885,7 +885,7 @@ ggsave(plot = plot_sp500,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 read_csv("data/avg_hourly_earning.csv") %>% 
@@ -940,17 +940,17 @@ read_csv("data/avg_hourly_earning.csv") %>%
   scroll_box(width = "100%", height = "500px")
 ```
 
-## CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
+### CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
 
 And this precipitous increase in corporate profits and valuation, having not trickled down to the middle class, appears to have mostly gone to the corporate executives of America. While in the 60s and early 70s, a CEO only earned about 20x to 25x the amount their worker did, this ratio skyrocketed to more 320 by 2019. This change may not have taken place dramatically in the year 1971, but it can be argued that the decade following '71 was a long process of trend reversal from relative parity to the outsized ratio of modern America.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_ceo_ratio.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 plot_ceo_ratio <- read_csv("data/ceo_comp.csv") %>% 
@@ -1000,7 +1000,7 @@ ggsave(plot = plot_ceo_ratio,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 read_csv("data/ceo_comp.csv") %>% 
@@ -1014,7 +1014,7 @@ read_csv("data/ceo_comp.csv") %>%
 
 ```
 
-## Inequality 1: Gini Index {.tabset .tabset-fade .tabset-pills}
+### Inequality 1: Gini Index {.tabset .tabset-fade .tabset-pills}
 
 Unsurprisingly this previous pattern has corresponded with an increase in the Gini Index, measuring household income inequality. Here it is clear through the smoothed trendline that the years around 1971 were the bottom of the valley that signalled a trend reversal towards the massive inequality in modern America.
 
@@ -1028,13 +1028,13 @@ Unsurprisingly this previous pattern has corresponded with an increase in the Gi
 > | A Gini index of zero represents perfect equality and 1.00, perfect inequality.                                                                                                                                        |
 > +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_gini.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 gini <- fredr(
@@ -1089,7 +1089,7 @@ ggsave(plot = plot_gini,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 fredr(
@@ -1108,17 +1108,17 @@ fredr(
 
 ```
 
-## Inequality 2: Top 10% as share of total income {.tabset .tabset-fade .tabset-pills}
+### Inequality 2: Top 10% as share of total income {.tabset .tabset-fade .tabset-pills}
 
 In a similar pattern, while in the post-war era, the top 10% of earners in America accounted for an unprecedentedly small proportion of total income, this proportion started to increase dramatically again, with the trend reversal beginning around 1971. Data here is taken from Saez and Piketty's original research.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_top10_incomeshare.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 plot_top10_incomeshare <- read_csv("data/fct_income_distro.csv") %>% 
@@ -1174,7 +1174,7 @@ ggsave(plot = plot_top10_incomeshare,
        type = "cairo-png")
 ```
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 
@@ -1194,19 +1194,19 @@ read_csv("data/fct_income_distro.csv") %>%
 
 ```
 
-## Inequality 3: Top 0.5% vs. bottom 90% as share of total wealth {.tabset .tabset-fade .tabset-pills}
+### Inequality 3: Top 0.5% vs. bottom 90% as share of total wealth {.tabset .tabset-fade .tabset-pills}
 
 Regarding economic inequality, analysing the distribution of wealth is every bit as important - if not more - than that of income. In this section, I have picked an even smaller slice (0.5%) to demonstrate the chasm that separates the vast majority of Americans and those at the top. 
 
 From the beginning of the time series up until the 70s, the two proportions were trending towards overall higher equality, until the .5% richest began to hold more of total wealth once again after 1971. The trend reversal for wealth came later in the 70s decade - possibly as a lagging indicator resulting from the earlier reversal of income outlined in the previous section.
 
-### Plot
+#### Plot
 
 ```{r out.width='100%', echo=FALSE}
 knitr::include_graphics("plots/plot_top.5_wealthshare.png")
 ```
 
-### Code
+#### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
 plot_top.5_wealthshare <- read_csv("data/wealth_distro_top10_top.5.csv") %>% 
@@ -1289,7 +1289,7 @@ ggsave(plot = plot_top.5_wealthshare,
 ```
 
 
-### Data
+#### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
 
@@ -1308,6 +1308,371 @@ read_csv("data/wealth_distro_top10_top.5.csv") %>%
 ```
 
 
+## Global Financial (Dis)Order
+
+------------------------------------------------------------------------
+
+This section focuses chiefly on how the global economy post-71 has also been an era of tumult for many countries' economies beyond the US.
+
+1971 made its mark on the global economy with the collapse of the Bretton Woods system, which in turn had a ripple effect on economies beyond that of the United States. This era saw the return of banking crises, market crashes, and most directly currency hyperinflations or debasements - especially compared to the relative dearth of said crises in the 'golden era' of Bretton Woods. 
+
+> Most of the visualisations in this section are based on data gathered by Carmen Reinhart and Kenneth Rogoff in their book *This Time Is Different: Eight Centuries of Financial Folly*. 
+> Note that while the book's an impressive work of macroeconomics research, it has also been a source of significant controversy, specifically over the veracity of the book's central claims and conclusion. After replication on data supplied by the authors, many economists have critiqued Reinhart and Rogoff's conclusions as flawed by poor code, selective omission of data, and a litany of other issues with academic rigour. 
+> With those concerns in mind, I have ensured to only use Reinhart and Rogoff's raw data and not the qualitative analysis or conclusions drawn by these authors, and whenever possible cross-reference data values with public records.  
+
+### Major inflation or depreciation of currency {.tabset .tabset-fade .tabset-pills}
+
+One central pillar of the Bretton Woods system is the status of the US Dollar as the world's reserve currency, backed by the Federal Reserve's accumulated gold. This can be argued to have had a stabilising effect on global currencies, as many were pegged to the US Dollar, the value of which stayed relatively stable. 
+
+When the US Dollar's convertibility to gold was ended, most currencies were no longer anchored to a relatively stable value. Especially with the advent of modern monetary policy, most currencies have become free-floating *fiat* currency backed and controlled by central banks' control of the money supply. Easily observable in this new era is the returned propensity for inflationary crises suffered by many currencies (especially those of weaker economies, or in periods of global financial instability.)
+
+#### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_inflations.png")
+```
+
+#### Code
+
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
+plot_inflations <- read_csv("data/inflations.csv") %>% 
+  filter(year >= 1900) %>% 
+  mutate(yroll = zoo::rollmean(inflation_eps, k = 5, fill = NA)) %>% 
+  ggplot(aes(x = year)) + 
+  
+  annotate(
+    "rect",
+    xmin = 1945, xmax = 1971,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_grid,
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1958,
+    y = 22,
+    label = "Post-War\nBretton Woods",
+    fontface = 2,
+    col = palette_grid
+  ) + 
+  annotate(
+    "rect",
+    xmin = 1914, xmax = 1945,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_prim[3],
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1929,
+    y = 22,
+    label = "World Wars & \nInterwar Depression",
+    fontface = 2,
+    col = palette_prim[3]
+  ) + 
+  annotate(
+    "text",
+    x = 1974,
+    y = 22,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  geom_point(aes(y = inflation_eps),
+             col = palette_prim[2],
+             size=.25) + 
+  geom_line(aes(y = yroll),
+            col = palette_prim[1],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+    
+  scale_x_continuous(breaks = seq(1800,2020,20))+
+  
+  labs(
+    title = "Global Instances of Annual inflation greater than 15% from 1900-2000",
+    subtitle = "(with 5-year moving average trendline)",
+    x = "Year",
+    y = "# of inflationary episodes \n",
+    caption = "Data Source: Reinhart and Rogoff, 2009"
+  )+
+  
+  theme(legend.position = "none")
+  
+  
+ggsave(plot = plot_inflations,
+       filename = "plots/plot_inflations.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+
+#### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+
+read_csv("data/inflations.csv") %>% 
+  filter(year >= 1900) %>% 
+  rename(
+    Year = year,
+    `Number of inflationary episodes` = inflation_eps
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+### Banking crises {.tabset .tabset-fade .tabset-pills}
+
+Similarly, it would appear that the Bretton Woods system was correlated with a relative stability in terms of countries with a banking crisis (or multiple crises.) Serendipitously enough, the 5-year MA trendline started immediately picking up after 1971, and banking instability has remained high since. Note the outlier on the top right - this high value is representative of the Global Financial Crisis of 2008. 
+
+#### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_banking_crises.png")
+```
+
+#### Code
+
+```{r eval=FALSE, fig.height=5, fig.width=10, message=FALSE, warning=FALSE, class.output="scroll-100"}
+plot_banking_crises <- read_csv("data/banking_crises.csv") %>% 
+  filter(year >= 1900) %>% 
+  mutate(yroll = zoo::rollmean(crises_eps, k = 5, fill = NA)) %>% 
+  ggplot(aes(x = year)) + 
+    
+  annotate(
+    "rect",
+    xmin = 1945, xmax = 1971,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_grid,
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1958,
+    y = 43.5,
+    label = "Post-War\nBretton Woods",
+    fontface = 2,
+    col = palette_grid
+  ) + 
+  annotate(
+    "rect",
+    xmin = 1914, xmax = 1945,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_prim[3],
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1929,
+    y = 43.5,
+    label = "World Wars & \nInterwar Depression",
+    fontface = 2,
+    col = palette_prim[3]
+  ) + 
+  annotate(
+    "text",
+    x = 1974,
+    y = 43.5,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+
+  geom_point(aes(y = crises_eps),
+             col = palette_prim[2],
+             size=.25) + 
+  geom_line(aes(y = yroll),
+            col = palette_prim[1],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+    
+  scale_x_continuous(breaks = seq(1800,2020,20))+
+  ylim(-3,45)+
+  
+  labs(
+    title = "Banking crises weighted by share of world income 1900-2000",
+    subtitle = "(with 5-year moving average trendline)",
+    x = "Year",
+    y = "Weighted count of crises \n",
+    caption = "Data Source: Reinhart and Rogoff, 2009"
+  )+
+  theme(legend.position = "none")
+  
+  
+ggsave(plot = plot_banking_crises,
+       filename = "plots/plot_banking_crises.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+
+#### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+
+read_csv("data/banking_crises.csv") %>% 
+  filter(year >= 1900) %>% 
+  rename(
+    Year = year,
+    `Income-share-weighted Count of Banking Crises` = crises_eps
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+<br><br><br>
+
+</div>
+
+
+
+### Sovereign Debt Credit Defaults or Restructuring {.tabset .tabset-fade .tabset-pills}
+
+While the effect is delayed in the case of credit default and restructuring, a dramatic rise in the number of default events can also be observe in the decade past 1971, accelerating well into the 80s and 90s. Reinhart and Rogoff's sample population here does not contain all nations of the world, but is representative enough of different global economic regions.
+
+#### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_credit_default.png")
+```
+
+#### Code
+
+```{r eval=FALSE, fig.height=5, fig.width=10, message=FALSE, warning=FALSE, class.output="scroll-100"}
+plot_credit_default <- read_csv("data/credit_defaults.csv") %>% 
+  filter(Year >= 1900) %>% 
+  pivot_longer(
+    cols = -Year,
+    names_to = "Country",
+    values_to = "is_default"
+  ) %>% 
+  mutate(
+    Country = toupper(Country),
+    is_default = replace_na(is_default,0)
+  ) %>% 
+  group_by(Year) %>% 
+  summarise(
+    n_default = mean(is_default)
+  ) %>% 
+  mutate(yroll = zoo::rollmean(n_default, k = 5, fill = NA)) %>%
+  ggplot(aes(x = Year))+
+  annotate(
+    "rect",
+    xmin = 1945, xmax = 1971,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_grid,
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1958,
+    y = 0.42,
+    label = "Post-War\nBretton Woods",
+    fontface = 2,
+    col = palette_grid
+  ) + 
+  annotate(
+    "rect",
+    xmin = 1914, xmax = 1945,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_prim[3],
+    alpha = .25
+  ) +
+  annotate(
+    "text",
+    x = 1929,
+    y = 0.42,
+    label = "World Wars & \nInterwar Depression",
+    fontface = 2,
+    col = palette_prim[3]
+  ) + 
+  annotate(
+    "text",
+    x = 1974,
+    y = 0.42,
+    label = "1971",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+
+  geom_point(aes(y = n_default),
+             col = palette_prim[2],
+             size=.25) + 
+  geom_line(aes(y = yroll),
+            col = palette_prim[1],
+            size = 1.25)+
+  geom_vline(
+    xintercept = 1971,
+    linetype = "dashed",
+    size = 0.75,
+    col = palette_grid
+  )+
+  theme_pelican70()+
+    
+  scale_x_continuous(breaks = seq(1800,2020,20))+
+  scale_y_continuous(labels = scales::percent)+
+  
+  labs(
+    title = "Proportion of Countries in a state of Credit Default or Restructuring 1900-2014",
+    subtitle = "(with 5-year moving average trendline)",
+    x = "Year",
+    y = "\n",
+    caption = "Data Source: Reinhart and Rogoff, 2014"
+  )+
+  theme(legend.position = "none")
+  
+  
+ggsave(plot = plot_credit_default,
+       filename = "plots/plot_credit_default.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+#### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+
+read_csv("data/credit_defaults.csv") %>% 
+  filter(Year >= 1900) %>% 
+  pivot_longer(
+    cols = -Year,
+    names_to = "Country",
+    values_to = "is_default"
+  ) %>% 
+  transmute(
+    Year = Year,
+    Country = toupper(Country),
+    `Is in Default or Debt Restructuring` = replace_na(is_default,0) %>% as.logical()
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
 
 <br><br><br>
 
