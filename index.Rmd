@@ -109,10 +109,13 @@ theme_pelican70 <- function () {
       plot.title            = element_text(family = "Newslab Bold",
                                            color = palette_tert[2],
                                            margin = margin(t = 2,
-                                                           b = 14,
+                                                           b = 8,
                                                            unit = "pt")),
       plot.subtitle         = element_text(family = "Newslab",
-                                           color = palette_tert[2]),
+                                           color = palette_tert[2],
+                                           margin = margin(t = 2,
+                                                           b = 12,
+                                                           unit = "pt")),
       axis.text.y           = element_text(angle = 90,
                                            color=palette_tert[2]),
       axis.text.x           = element_text(color=palette_tert[2]),
@@ -185,7 +188,7 @@ knitr::include_graphics("plots/plot_prod_wage.png")
 ### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
-prod_wage <- read_csv("productivity_wage.csv") %>%
+prod_wage <- read_csv("data/productivity_wage.csv") %>%
   mutate_all(funs(str_replace(., "%", ""))) %>%
   mutate_all(funs(str_squish(.))) %>%
   transmute(
@@ -330,7 +333,7 @@ ggsave(plot = plot_prod_wage,
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
-read_csv("productivity_wage.csv") %>%
+read_csv("data/productivity_wage.csv") %>%
   mutate_all(funs(str_replace(., "%", ""))) %>%
   mutate_all(funs(str_squish(.))) %>%
   transmute(
@@ -795,7 +798,7 @@ Here I call two extra packages called *tidyquant* and *quantmod* to fetch and ma
 library(tidyquant)
 library(quantmod)
 
-sp500 <- read_csv("avg_hourly_earning.csv") %>% 
+sp500 <- read_csv("data/avg_hourly_earning.csv") %>% 
   pivot_longer(cols = -Year,
                names_to = "month",
                values_to ="value") %>% 
@@ -885,7 +888,7 @@ ggsave(plot = plot_sp500,
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
-read_csv("avg_hourly_earning.csv") %>% 
+read_csv("data/avg_hourly_earning.csv") %>% 
   pivot_longer(cols = -Year,
                names_to = "month",
                values_to ="value") %>% 
@@ -939,7 +942,7 @@ read_csv("avg_hourly_earning.csv") %>%
 
 ## CEO-to-worker Compensation Ratio {.tabset .tabset-fade .tabset-pills}
 
-And this precipitous increase in corporate profits, having not trickled down to the middle class, appears to have mostly gone to the corporate executives of America. While in the 60s and early 70s, a CEO only earned about 20x to 25x the amount their worker did, this ratio skyrocketed to more 320 by 2019. This change may not have taken place dramatically in the year 1971, but it can be argued that the decade following '71 was a long process of trend reversal from relative parity to the outsized ratio of modern America.
+And this precipitous increase in corporate profits and valuation, having not trickled down to the middle class, appears to have mostly gone to the corporate executives of America. While in the 60s and early 70s, a CEO only earned about 20x to 25x the amount their worker did, this ratio skyrocketed to more 320 by 2019. This change may not have taken place dramatically in the year 1971, but it can be argued that the decade following '71 was a long process of trend reversal from relative parity to the outsized ratio of modern America.
 
 ### Plot
 
@@ -950,7 +953,7 @@ knitr::include_graphics("plots/plot_ceo_ratio.png")
 ### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
-plot_ceo_ratio <- read_csv("ceo_comp.csv") %>% 
+plot_ceo_ratio <- read_csv("data/ceo_comp.csv") %>% 
   mutate(
     realized = realized %>% str_extract("^\\d+.{0,1}\\d+") %>% as.numeric()
   ) %>% 
@@ -1000,7 +1003,7 @@ ggsave(plot = plot_ceo_ratio,
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
-read_csv("ceo_comp.csv") %>% 
+read_csv("data/ceo_comp.csv") %>% 
   transmute(
     Year = as.numeric(year),
     `Realized Compensation Ratio` = realized %>% str_extract("^\\d+.{0,1}\\d+") %>% as.numeric()
@@ -1022,7 +1025,7 @@ Unsurprisingly this previous pattern has corresponded with an increase in the Gi
 > | \                                                                                                                                                                                                                    |
 > | The Gini index measures the area between the Lorenz curve and the hypothetical line of absolute equality, expressed as a percentage of the maximum area under the line.\                                             |
 > | \                                                                                                                                                                                                                    |
-> | A Gini index of zero represents perfect equality and 100, perfect inequality.                                                                                                                                        |
+> | A Gini index of zero represents perfect equality and 1.00, perfect inequality.                                                                                                                                        |
 > +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 ### Plot
@@ -1105,33 +1108,30 @@ fredr(
 
 ```
 
-## Inequality 2: Top 5% as share of total income {.tabset .tabset-fade .tabset-pills}
+## Inequality 2: Top 10% as share of total income {.tabset .tabset-fade .tabset-pills}
 
-In a similar pattern, while in the post-war era, the top 5% of earners in America accounted for an unprecedentedly small proportion of total income, this proportion started to increase dramatically again, with the trend reversal beginning around 1971. Note that this data, taken from Saez and Piketty's original research, goes further back but is only available up to 1998. While more updated data is not readily available, judging from previous patterns, it wouldn't be unreasonable to surmise that this proportion has only increased since.
+In a similar pattern, while in the post-war era, the top 10% of earners in America accounted for an unprecedentedly small proportion of total income, this proportion started to increase dramatically again, with the trend reversal beginning around 1971. Data here is taken from Saez and Piketty's original research.
 
 ### Plot
 
 ```{r out.width='100%', echo=FALSE}
-knitr::include_graphics("plots/plot_top5_incomeshare.png")
+knitr::include_graphics("plots/plot_top10_incomeshare.png")
 ```
 
 ### Code
 
 ```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
-saez <- read_csv("pikettysaez_table2.csv") 
-
-
-plot_top5_incomeshare <- saez %>% 
-  transmute(year, top5 = share_95_99+share_99_100) %>% 
+plot_top10_incomeshare <- read_csv("data/fct_income_distro.csv") %>% 
+  select(year,top10) %>% 
   pivot_longer(
     cols = -year,
     names_to = "pop",
-    values_to = "value"
-  ) %>%
+    values_to = "share"
+  ) %>% 
   ggplot(
     aes(
       x = year,
-      y = value/100,
+      y = share,
       col = pop
     )
   )+
@@ -1139,8 +1139,8 @@ plot_top5_incomeshare <- saez %>%
               fill  = palette_2nd[2],
               size  = 1.6,
               alpha = .75)+
-  geom_line(col  = palette_prim[3],
-            size = 1.25)+
+  geom_line(size = 1.25,
+            col = palette_prim[3])+
   geom_vline(
     xintercept = 1971,
     linetype = "dashed",
@@ -1148,9 +1148,10 @@ plot_top5_incomeshare <- saez %>%
     col = palette_grid
   )+
   theme_pelican70()+
+  scale_x_continuous(breaks = seq(1900,2020,20))+
   scale_y_continuous(labels = scales::percent)+
   labs(
-    title = "Share of total income by top 5% earners 1917-1998",
+    title = "Share of total income by top 10% earners 1917-1998",
     subtitle = "(with Loess smoothed trendline)",
     x = "Year",
     y = "% Share of total \n",
@@ -1158,25 +1159,16 @@ plot_top5_incomeshare <- saez %>%
   ) +
   annotate(
     "text",
-    x = 1969,
-    y = 0.46,
-    label = "1971",
-    fontface = 2,
-    col = palette_grid
-  ) +
-  ylim(.18,.36)+
-  annotate(
-    "text",
-    x = 1969,
-    y = 0.35,
+    x = 1968,
+    y = 0.49,
     label = "1971",
     fontface = 2,
     col = palette_grid
   ) +
   theme(legend.position = "none")
 
-ggsave(plot = plot_top5_incomeshare,
-       filename = "plots/plot_top5_incomeshare.png",
+ggsave(plot = plot_top10_incomeshare,
+       filename = "plots/plot_top10_incomeshare.png",
        h = 5,
        w = 10,
        type = "cairo-png")
@@ -1185,12 +1177,26 @@ ggsave(plot = plot_top5_incomeshare,
 ### Data
 
 ```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
-read_csv("pikettysaez_table2.csv") %>% 
+
+read_csv("data/fct_income_distro.csv") %>%
+  rename(
+    Year = year,
+    `Top 10%` = top10,
+    `Top 5%` = top5,
+    `Top 1%` = top1,
+    `Top 0.5%` = top.5,
+    `Top 0.1%` = top.1,
+    `Top 0.01%` = top.01
+  ) %>% 
   kbl() %>% 
   kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
   scroll_box(width = "100%", height = "500px")
 
 ```
+
+
+
+
 
 <br><br><br>
 
