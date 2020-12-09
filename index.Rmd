@@ -1194,10 +1194,122 @@ read_csv("data/fct_income_distro.csv") %>%
 
 ```
 
+## Inequality 3: Top 0.5% vs. bottom 90% as share of total wealth {.tabset .tabset-fade .tabset-pills}
 
+Regarding economic inequality, analysing the distribution of wealth is every bit as important - if not more - than that of income. In this section, I have picked an even smaller slice (0.5%) to demonstrate the chasm that separates the vast majority of Americans and those at the top. 
+
+From the beginning of the time series up until the 70s, the two proportions were trending towards overall higher equality, until the .5% richest began to hold more of total wealth once again after 1971. The trend reversal for wealth came later in the 70s decade - possibly as a lagging indicator resulting from the earlier reversal of income outlined in the previous section.
+
+### Plot
+
+```{r out.width='100%', echo=FALSE}
+knitr::include_graphics("plots/plot_top.5_wealthshare.png")
+```
+
+### Code
+
+```{r class.output="scroll-100", message=FALSE, warning=FALSE, eval = FALSE}
+plot_top.5_wealthshare <- read_csv("data/wealth_distro_top10_top.5.csv") %>% 
+  mutate(bottom90 = 1-top10) %>% 
+  select(year,top.5,bottom90) %>% 
+  pivot_longer(
+    cols = -year,
+    names_to = "pop",
+    values_to = "share"
+  ) %>% 
+  ggplot(
+    aes(
+      x = year,
+      y = share,
+      col = pop
+    )
+  )+
+  geom_line(size=1.25)+
+  
+  scale_x_continuous(breaks = seq(1900,2020,20))+
+  scale_color_manual(values = palette_prim)+
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(.1,.43))+
+
+  theme_pelican70()+
+  
+  labs(
+    title = "Share of total wealth between \nbottom 90% and top 0.5% from 1913-2019",
+    subtitle = "",
+    x = "Year",
+    y = "% Share of total \n",
+    caption = "Data Source: Piketty and Saez, 2019"
+  ) +
+  
+  annotate(
+    "text",
+    x = 1975,
+    y = .42,
+    label = "1970s",
+    fontface = 2,
+    col = palette_grid
+  ) +
+  
+  annotate(
+    "rect",
+    xmin = 1970, xmax = 1980,
+    ymin = -Inf, ymax = Inf,
+    fill = palette_grid,
+    col = palette_grid,
+    alpha = .25
+  ) +
+  
+  annotate(
+    "text",
+    x = 1998,
+    y = .365,
+    col = palette_prim[1],
+    label = "Bottom 90%",
+    fontface = 2,
+    size = 4,
+  ) +
+  
+  annotate(
+    "text",
+    x = 1996.5,
+    y = .195,
+    col = palette_prim[2],
+    label = "Top 0.5%",
+    fontface = 2,
+    size = 4,
+  ) +
+  
+  theme(legend.position = "none")
+
+ggsave(plot = plot_top.5_wealthshare,
+       filename = "plots/plot_top.5_wealthshare.png",
+       h = 5,
+       w = 10,
+       type = "cairo-png")
+```
+
+
+### Data
+
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, echo = FALSE}
+
+read_csv("data/wealth_distro_top10_top.5.csv") %>% 
+  mutate(bottom90 = 1-top10) %>% 
+  select(year,top.5,bottom90) %>% 
+  rename(
+    Year = year,
+    `Top 0.5%` = top.5,
+    `Bottom 90%` = bottom90
+  ) %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed")) %>% 
+  scroll_box(width = "100%", height = "500px")
+
+```
 
 
 
 <br><br><br>
 
 </div>
+
