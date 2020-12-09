@@ -316,7 +316,7 @@ plot_prod_wage <- prod_wage %>%
   ) +
   
   labs(
-    title = "Figure 1: Productivity and hourly wage rise from 1948-2018",
+    title = "Productivity and hourly wage rise from 1948-2018",
     subtitle = "",
     x = "Year",
     y = "% of 1948 value\n",
